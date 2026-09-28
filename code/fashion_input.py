@@ -46,12 +46,12 @@ def load_data_numpy(df):
     '''
 
     num_images = len(df)
-    image_path_array = df['image_path'].as_matrix()
-    label_array = df['category'].as_matrix()
-    x1 = df['x1_modified'].as_matrix().reshape(-1, 1)
-    y1 = df['y1_modified'].as_matrix().reshape(-1, 1)
-    x2 = df['x2_modified'].as_matrix().reshape(-1, 1)
-    y2 = df['y2_modified'].as_matrix().reshape(-1, 1)
+    image_path_array = df['image_path'].to_numpy()
+    label_array = df['category'].to_numpy()
+    x1 = df['x1_modified'].to_numpy().reshape(-1, 1)
+    y1 = df['y1_modified'].to_numpy().reshape(-1, 1)
+    x2 = df['x2_modified'].to_numpy().reshape(-1, 1)
+    y2 = df['y2_modified'].to_numpy().reshape(-1, 1)
     bbox_array = np.concatenate((x1, y1, x2, y2), axis=1)
 
     image_array = np.array([]).reshape(-1, IMG_ROWS, IMG_COLS, 3)

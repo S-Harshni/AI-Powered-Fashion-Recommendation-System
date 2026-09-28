@@ -2,11 +2,17 @@
 This is the resnet structure.
 '''
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 from hyper_parameters import *
 
 BN_EPSILON = 0.001
 NUM_LABELS = 6
+
+def l2_regularizer(scale):
+    '''Same as the removed tf.contrib.layers.l2_regularizer: scale * sum(w^2) / 2.'''
+    return lambda weights: scale * tf.nn.l2_loss(weights)
+
 
 def activation_summary(x):
     '''
@@ -17,7 +23,7 @@ def activation_summary(x):
     # tf.histogram_summary(tensor_name + '/activations', x)
     # tf.scalar_summary(tensor_name + '/sparsity', tf.nn.zero_fraction(x))
 
-def create_variables(name, shape, initializer=tf.contrib.layers.xavier_initializer(), is_fc_layer=False):
+def create_variables(name, shape, initializer=tf.glorot_uniform_initializer(), is_fc_layer=False):
     '''
     :param name: A string. The name of the new variable
     :param shape: A list of dimensions
@@ -27,9 +33,9 @@ def create_variables(name, shape, initializer=tf.contrib.layers.xavier_initializ
     :return: The created variable
     '''
     if is_fc_layer is True:
-        regularizer = tf.contrib.layers.l2_regularizer(scale=FLAGS.fc_weight_decay)
+        regularizer = l2_regularizer(FLAGS.fc_weight_decay)
     else:
-        regularizer = tf.contrib.layers.l2_regularizer(scale=FLAGS.weight_decay)
+        regularizer = l2_regularizer(FLAGS.weight_decay)
 
     new_variables = tf.get_variable(name, shape=shape, initializer=initializer,
                                     regularizer=regularizer)

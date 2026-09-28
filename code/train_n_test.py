@@ -3,7 +3,8 @@ This is the main training profile.
 '''
 from fashion_input import *
 import os
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import time
 from datetime import datetime
 from simple_resnet import *
@@ -51,7 +52,7 @@ class Train:
 
     def top_k_error(self, predictions, labels, k):
         batch_size = predictions.get_shape().as_list()[0]
-        in_top1 = tf.to_float(tf.nn.in_top_k(predictions, labels, k=1))
+        in_top1 = tf.cast(tf.nn.in_top_k(predictions, labels, k=1), tf.float32)
         num_correct = tf.reduce_sum(in_top1)
         return (batch_size - num_correct) / float(batch_size)
 
@@ -156,7 +157,7 @@ class Train:
         train_op, train_ema_op = self.train_operation(global_step, full_loss, top1_error)
         val_op = self.validation_op(validation_step, vali_top1_error, vali_loss)
 
-        saver = tf.train.Saver(tf.all_variables())
+        saver = tf.train.Saver(tf.global_variables())
         summary_op = tf.summary.merge_all()
         init = tf.initialize_all_variables()
         sess = tf.Session()
@@ -321,12 +322,12 @@ class Train:
 
         ##########################
         # Build test graph
-        logits, global_pool = inference(self.test_image_placeholder, n=FLAGS.num_residual_blocks, reuse=False,
+        logits, _, global_pool = inference(self.test_image_placeholder, n=FLAGS.num_residual_blocks, reuse=False,
                                               keep_prob_placeholder=self.dropout_prob_placeholder)
         predictions = tf.nn.softmax(logits)
         test_error = self.top_k_error(predictions, self.test_label_placeholder, 1)
 
-        saver = tf.train.Saver(tf.all_variables())
+        saver = tf.train.Saver(tf.global_variables())
         sess = tf.Session()
         saver.restore(sess, FLAGS.test_ckpt_path)
         print('Model restored!')
@@ -359,6 +360,7 @@ class Train:
         print('Predictin array has shape ', fc_np.shape)
         np.save(FLAGS.fc_path, fc_np[-5:,:])
 
-train = Train()
-train.train()
-train.test()
+if __name__ == '__main__':
+    train = Train()
+    train.train()
+    train.test()

@@ -1,7 +1,9 @@
 '''
 This file defines all hyper-parameters regarding training
 '''
-import tensorflow as tf
+import sys
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 FLAGS = tf.app.flags.FLAGS
 # Hyper-parameters about saving path and data loading path
@@ -32,3 +34,6 @@ checkpoint''')
 ## Hyper-parameters about the model
 tf.app.flags.DEFINE_integer('num_residual_blocks', 2, '''number of residual blocks in ResNet''')
 tf.app.flags.DEFINE_boolean('is_localization', True, '''Add localization task or not''')
+
+# TF2's absl flags must be parsed before use (TF1 parsed them lazily).
+FLAGS(sys.argv, known_only=True)

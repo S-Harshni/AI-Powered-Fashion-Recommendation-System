@@ -5,12 +5,12 @@ import cv2
 path = 'data/vali_modified.csv'
 df = pd.read_csv(path)
 
-image_path_array = df['image_path'].as_matrix()
-label_array = df['category'].as_matrix()
-x1 = df['x1'].as_matrix().astype(np.float32)
-y1 = df['y1'].as_matrix().astype(np.float32)
-x2 = df['x2'].as_matrix().astype(np.float32)
-y2 = df['y2'].as_matrix().astype(np.float32)
+image_path_array = df['image_path'].to_numpy()
+label_array = df['category'].to_numpy()
+x1 = df['x1'].to_numpy().astype(np.float32)
+y1 = df['y1'].to_numpy().astype(np.float32)
+x2 = df['x2'].to_numpy().astype(np.float32)
+y2 = df['y2'].to_numpy().astype(np.float32)
 
 
 for i in range(len(image_path_array)):
